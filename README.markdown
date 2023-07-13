@@ -1,6 +1,6 @@
 # Spike on Concourse Branch Detection
 
-> Beware, this is a spike. If you want to use this for real, turn the branch detection into a proper resource so that pipelines can trigger on branches added or removed.
+> Beware, this is a spike. If you want to use this for real, turn the branch detection into a proper resource so that pipelines can trigger on branches added or removed (instead of polling via job).
 
 1. Create a `secrets.yml`:
 
