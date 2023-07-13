@@ -1,0 +1,46 @@
+jobs:
+  - name: detect-branch
+    plan:
+      - get: source
+      - get: spike
+        trigger: true
+      - task: list-remotes
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: bitnami/git }
+          inputs: [ name: source ]
+          outputs: [ name: branches ]
+          run:
+            path: bash
+            args:
+              - -c
+              - |
+                cd source
+                git ls-remote --heads origin | # get the list
+                  cut -f 2                   | # extract the names
+                  cut -d / -f 3-             | # split off prefix
+                  awk '{print "- " $0}'      | # make it YAML
+                  tee ../branches/list.yml     # print and save
+      - load_var: branches
+        file: branches/list.yml
+        format: yaml
+      - across:
+        - var: branch-name
+          values: ((.:branches))
+        set_pipeline: show-branch
+        file: spike/pipelines/show-branch.yml
+        instance_vars: { branch: ((.:branch-name)) }
+        vars: { github: ((github)) }
+resources:
+  - name: source
+    type: git
+    source:
+      uri: https://github.com/suhlig/concourse-rss-resource
+      password: ((github.access_token))
+  - name: spike
+    type: git
+    source:
+      uri: https://github.com/suhlig/concourse-branch-detection
+      password: ((github.access_token))
