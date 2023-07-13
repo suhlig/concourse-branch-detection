@@ -19,3 +19,7 @@ Detect all (remote) branches of a git repo and create a pipeline instance for it
       --config pipelines/branch-detector.yml \
       --load-vars-from <(ansible-vault view secrets.yml)
     ```
+
+# References
+
+- [GH discussion](https://github.com/concourse/concourse/discussions/8784)
